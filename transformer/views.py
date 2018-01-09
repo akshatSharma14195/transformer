@@ -10,3 +10,8 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("Hola!")
+
+
+def transform(request):
+    # need to complete this API
+    return HttpResponse("Boom!")

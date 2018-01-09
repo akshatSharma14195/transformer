@@ -13,13 +13,13 @@ def json_default():
 
 
 class URLMapper(models.Model):
-    access_url = models.CharField(max_length=200, default=uuid.uuid4, editable=False)
-    web_hook_url = models.CharField(max_length=200, unique=True)
+    access_key = models.UUIDField(default=uuid.uuid4, editable=False)
+    web_hook_url = models.URLField(unique=True)
     title = models.CharField(max_length=250)
-    allowed_headers = JSONField(default=json_default)
+    extra_headers = JSONField(default=json_default)
 
     def __str__(self):
-        return str(self.access_url) + " -> " + self.web_hook_url
+        return str(self.access_key) + " -> " + self.web_hook_url
 
 
 class KeyMapper(models.Model):
@@ -32,12 +32,12 @@ class KeyMapper(models.Model):
 
 
 class URLAccessLogger(models.Model):
-    url_mapper_id = models.ForeignKey(URLMapper)
+    url_mapper = models.ForeignKey(URLMapper)
     input_data = JSONField(default=json_default)
     output_data = JSONField(default=json_default)
     response_data = JSONField(default=json_default)
 
 
 class PermissionMapper(models.Model):
-    url_mapper_id = models.ForeignKey(URLMapper)
-    group_id = models.ForeignKey(Group)
+    url_mapper = models.ForeignKey(URLMapper)
+    group = models.ForeignKey(Group)
