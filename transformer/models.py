@@ -33,9 +33,10 @@ class KeyMapper(models.Model):
 
 class URLAccessLogger(models.Model):
     url_mapper = models.ForeignKey(URLMapper)
+    created_at = models.DateTimeField(auto_now_add=True)
     input_data = JSONField(default=json_default)
     output_data = JSONField(default=json_default)
-    response_data = JSONField(default=json_default)
+    response_data = models.TextField(default='')
 
 
 class PermissionMapper(models.Model):

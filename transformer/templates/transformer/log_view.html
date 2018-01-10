@@ -1,0 +1,55 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<h1> Welcome to the Url Access log View page, {{ user.username }}</h1>
+
+{% if error_message %}<p> <strong>{{ error_message }}</strong></p>{% endif %}
+
+{% csrf_token %}
+<select name="web_hook" id="web_hook">
+    {% for web_hook_url in web_hook_url_list %}
+        <option value="{{ web_hook_url.id }}">{{web_hook_url.web_hook_url}}</option>
+    {% endfor %}
+</select>
+<input type="button" value="Get logs" id="get_log">
+<script>
+    function render_log_table (log_data) {
+        console.log(log_data, typeof log_data);
+        let html_to_render = `
+            <table>
+                <tr>
+                    <th>Input Data</th>
+                    <th>Output Data</th>
+                    <th>Response Data</th>
+                    <th>Request At</th>
+                </tr>`;
+        log_data.forEach((log_row) => {
+            html_to_render=`${html_to_render}
+                <tr>
+                    <td>${log_row.input_data}</td>
+                    <td>${log_row.output_data}</td>
+                    <td>${log_row.response_data}</td>
+                    <td>${log_row.created_at}</td>
+                </tr>`;
+        });
+        $('#tableRender').html(`${html_to_render}</table>`);
+    }
+    // Stuff to make button work
+    $(document).ready(function() {
+        $('#get_log').click((e)=>{
+            let s = $('#web_hook').val();
+            $.ajax({
+                url: '{% url 'transformer:get_logs' %}',
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    web_hook_id: s
+                },
+                dataType: 'json',
+                success: (data) => {
+                    render_log_table(data.log_rows);
+                }
+            })
+        })
+    })
+</script>
+<div id="tableRender"></div>
