@@ -1,14 +1,38 @@
-<form action="{% url 'transformer:login_submit' %}" method="post">
-    {% csrf_token %}
-    <div class="form-row">
-        <label class="required" for="id_username">Username:</label>
-        <input type="text" name="username" autofocus required id="id_username" maxlength="254">
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <center>
+<div class="container">
+    <div class="form-header">
+        <h1></h1>
     </div>
-    <div class="form-row">
-        <label class="required" for="id_password">Password:</label>
-        <input type="password" name="password" autofocus required id="id_password">
-    </div>
-    <div class="submit-row">
-        <input type="submit" value="Log In">
-    </div>
-</form>
+    <form action="{% url 'transformer:login_submit' %}" method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <label class="required" for="id_username">Username:</label>
+            <input type="text" name="username" autofocus required id="id_username" maxlength="254">
+        </div>
+        <br/>
+        <div class="form-row">
+            <label class="required" for="id_password">Password:</label>
+            <input type="password" name="password" autofocus required id="id_password">
+        </div>
+        <br/>
+        <div class="submit-row">
+            <input type="submit" class="btn btn-primary" value="Log In">
+        </div>
+    </form>
+</div>
+</center>
+</body>
+
+
+

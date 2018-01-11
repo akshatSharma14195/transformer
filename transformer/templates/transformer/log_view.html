@@ -26,16 +26,20 @@
     color: white;
 }
 </style>
-<h1> Welcome to the Url Access log View page, {{ user.username }}</h1>
+<div style="background-color:#4CAF50;">
+    <h1> Welcome to the Url Access log View page, {{ user.username }}</h1>
+</div>
 
 {% if error_message %}<p> <strong>{{ error_message }}</strong></p>{% endif %}
 
 {% csrf_token %}
+<br/>
 <select name="web_hook" id="web_hook">
     {% for web_hook_url in web_hook_url_list %}
         <option value="{{ web_hook_url.id }}">{{web_hook_url.web_hook_url}}</option>
     {% endfor %}
 </select>
+<br/><br/>
 <input type="button" value="Get logs" id="get_log">
 <script>
     function render_log_table (log_data) {
@@ -78,5 +82,5 @@
         })
     })
 </script>
-
+<br/><br/>
 <div id="tableRender"></div>

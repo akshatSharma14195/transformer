@@ -23,10 +23,7 @@ def index(request):
 def get_requests_func(request_method):
     request_method = request_method.lower()
     return {
-        'post': requests.post,
-        'put': requests.put,
-        'delete': requests.delete,
-        'patch': requests.patch,
+        'post': requests.post
     }[request_method]
 
 
@@ -89,7 +86,7 @@ def transform(request, access_key):
 
 
 @login_required
-def viewlogs(request):
+def view_logs(request):
     user = request.user
     try:
         web_hooks = URLMapper.objects.filter(permissionmapper__group__user__id=user.id)
