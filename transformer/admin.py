@@ -2,8 +2,10 @@
 from __future__ import unicode_literals
 from django.urls import reverse
 from django.contrib import admin
+from django.conf import settings
+import json
 
-from .models import URLMapper, KeyMapper, PermissionMapper, HeaderMapper, URLAccessLogger
+from .models import URLMapper, KeyMapper, PermissionMapper, HeaderMapper, URLAccessLog
 # Register your models here.
 
 
@@ -20,7 +22,7 @@ class PermissionMapperInline(admin.TabularInline):
 
 
 def get_access_url(obj):
-    return reverse('transformer:map_url', kwargs={'access_key': obj.access_key})
+    return settings.PREFIX_URL + reverse('transformer:map_url', kwargs={'access_key': obj.access_key})
 
 
 get_access_url.short_description = 'Access URL'
@@ -42,24 +44,25 @@ def get_created_at(obj):
 get_created_at.short_description = 'Created At'
 
 
-def get_web_hook_url(obj):
-    return obj.url_mapper.web_hook_url
+def get_input_data(obj):
+    return json.dumps(obj.input_data)
 
 
-get_web_hook_url.short_description = 'Web hook URL'
+get_input_data.short_description = "Input Data"
 
 
-def get_access_key(obj):
-    return reverse('transformer:map_url', kwargs={'access_key': obj.url_mapper.access_key})
+def get_output_data(obj):
+    return json.dumps(obj.output_data)
 
 
-get_access_key.short_description = "Access URL"
+get_output_data.short_description = "Output Data"
 
 
-class URLAccessLoggerAdmin(admin.ModelAdmin):
+class URLAccessLogAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "input_data", "output_data", "response_data")
-    list_display = (get_web_hook_url, get_access_key, get_created_at,
-                    "input_data", "output_data", "response_data")
+    list_display = ("web_hook_url", "access_url", get_created_at,
+                    get_input_data, get_output_data,
+                    "response_data", "access_method")
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -68,11 +71,11 @@ class URLAccessLoggerAdmin(admin.ModelAdmin):
         return False
 
     def get_actions(self, request):
-        actions = super(URLAccessLoggerAdmin, self).get_actions(request)
+        actions = super(URLAccessLogAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
 
 
 admin.site.register(URLMapper, URLMapperAdmin)
-admin.site.register(URLAccessLogger, URLAccessLoggerAdmin)
+admin.site.register(URLAccessLog, URLAccessLogAdmin)
