@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from .models import URLMapper, URLAccessLogger
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist, EmptyResultSet
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 import requests
 from django.shortcuts import render
 
@@ -27,6 +30,7 @@ def get_requests_func(request_method):
     }[request_method]
 
 
+@login_required
 def transform(request, access_key):
     # check if access_key exists
     try:
@@ -74,6 +78,7 @@ def transform(request, access_key):
     return HttpResponse(response)
 
 
+@login_required
 def viewlogs(request):
     user = request.user
     try:
@@ -86,6 +91,7 @@ def viewlogs(request):
     })
 
 
+@login_required
 def get_logs(request):
     try:
         urlAccessLogs = URLAccessLogger.objects.filter(url_mapper_id=request.POST.get('web_hook_id'))\
@@ -101,3 +107,25 @@ def get_logs(request):
                                        'response_data': x.response_data,
                                        'created_at': str(x.created_at)
                                        } for x in urlAccessLogs]})
+
+
+def get_login(request):
+    if not request.user.is_authenticated:
+        return render(request, 'transformer/login_view.html')
+    else:
+        return HttpResponseRedirect(reverse('transformer:view_logs'))
+
+
+def login_submit(request):
+    print request.POST
+    try:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+    except KeyError:
+        return HttpResponseBadRequest("Enter username and password!")
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return HttpResponseRedirect(reverse('transformer:view_logs'))
+    else:
+        return HttpResponse("Invalid username or password!")

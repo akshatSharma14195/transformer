@@ -1,0 +1,14 @@
+<form action="{% url 'transformer:login_submit' %}" method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <label class="required" for="id_username">Username:</label>
+        <input type="text" name="username" autofocus required id="id_username" maxlength="254">
+    </div>
+    <div class="form-row">
+        <label class="required" for="id_password">Password:</label>
+        <input type="password" name="password" autofocus required id="id_password">
+    </div>
+    <div class="submit-row">
+        <input type="submit" value="Log In">
+    </div>
+</form>

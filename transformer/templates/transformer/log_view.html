@@ -1,5 +1,31 @@
+<!-- Import for jquery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
+<!-- Some copied css below -->
+<style>
+.nice_table_bro {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.nice_table_bro td, .nice_table_bro th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.nice_table_bro tr:nth-child(even){background-color: #f2f2f2;}
+
+.nice_table_bro tr:hover {background-color: #ddd;}
+
+.nice_table_bro th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
 <h1> Welcome to the Url Access log View page, {{ user.username }}</h1>
 
 {% if error_message %}<p> <strong>{{ error_message }}</strong></p>{% endif %}
@@ -15,7 +41,7 @@
     function render_log_table (log_data) {
         console.log(log_data, typeof log_data);
         let html_to_render = `
-            <table>
+            <table class="nice_table_bro">
                 <tr>
                     <th>Input Data</th>
                     <th>Output Data</th>

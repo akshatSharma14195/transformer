@@ -70,7 +70,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rampup.wsgi.application'
 
-
+LOGIN_URL = '/transformer/login/'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
