@@ -16,7 +16,6 @@ class URLMapper(models.Model):
     access_key = models.UUIDField(default=uuid.uuid4, editable=False)
     web_hook_url = models.URLField(unique=True)
     title = models.CharField(max_length=250)
-    extra_headers = JSONField(default=json_default)
 
     def __str__(self):
         return str(self.access_key) + " -> " + self.web_hook_url
@@ -42,3 +41,9 @@ class URLAccessLogger(models.Model):
 class PermissionMapper(models.Model):
     url_mapper = models.ForeignKey(URLMapper)
     group = models.ForeignKey(Group)
+
+
+class HeaderMapper(models.Model):
+    header_key = models.CharField(max_length=100)
+    header_value = models.CharField(max_length=100)
+    url_mapper = models.ForeignKey(URLMapper)

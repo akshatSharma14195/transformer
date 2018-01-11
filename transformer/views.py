@@ -5,8 +5,10 @@ from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseRedire
 from django.core.exceptions import ObjectDoesNotExist, EmptyResultSet
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import escape
 from django.urls import reverse
-import requests
+import requests, json
 from django.shortcuts import render
 
 # Create your views here.
@@ -21,16 +23,18 @@ def index(request):
 def get_requests_func(request_method):
     request_method = request_method.lower()
     return {
-        'get': requests.get,
         'post': requests.post,
         'put': requests.put,
-        'head': requests.head,
         'delete': requests.delete,
         'patch': requests.patch,
     }[request_method]
 
 
-@login_required
+def get_meta_header(key):
+    return 'HTTP_' + key.replace('-', '_').upper()
+
+
+@csrf_exempt
 def transform(request, access_key):
     # check if access_key exists
     try:
@@ -52,11 +56,18 @@ def transform(request, access_key):
         print "No keys to map"
         return HttpResponseBadRequest('<h1>Invalid transform</h1>')
 
-    # need to initiate new_headers with headers of this request?
-    # Facing issue passing CSRF token to next request
-    # new_headers = request.META
+    try:
+        all_headers = url_map.headermapper_set.all()
+    except EmptyResultSet:
+        print "No keys to map"
+        return HttpResponseBadRequest('<h1>No headers found</h1>')
+
+    # need to initiate new_headers with headers of this request
+
     new_headers = {}
-    new_headers.update(url_map.extra_headers)
+    for key_row in all_headers:
+        print get_meta_header(key_row.header_key)
+        new_headers[key_row.header_key] = request.META.get(get_meta_header(key_row.header_key)) or key_row.header_value
 
     if request.method == 'GET':
         response = requests.get(url_map.web_hook_url, headers=new_headers, params=new_request_obj,
@@ -67,7 +78,6 @@ def transform(request, access_key):
                             cookies=request.COOKIES)
 
     # need to log here
-    print type(response.text)
     resp_data = response.text
     try:
         url_map.urlaccesslogger_set.create(input_data=old_request_obj, output_data=new_request_obj,
@@ -102,10 +112,10 @@ def get_logs(request):
         return HttpResponseBadRequest("Invalid parameters!")
 
     return JsonResponse({'log_rows': [{'id': x.id,
-                                       'input_data': str(x.input_data),
-                                       'output_data': str(x.output_data),
-                                       'response_data': x.response_data,
-                                       'created_at': str(x.created_at)
+                                       'input_data': json.dumps(x.input_data, indent=2),
+                                       'output_data': json.dumps(x.output_data,indent=2),
+                                       'response_data': escape(x.response_data),
+                                       'created_at': x.created_at.strftime('%Y-%m-%d %H:%M')
                                        } for x in urlAccessLogs]})
 
 
