@@ -1,90 +1,117 @@
-<!-- Import for jquery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-<!-- Some copied css below -->
-<style>
-.nice_table_bro {
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-.nice_table_bro td, .nice_table_bro th {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
 
-.nice_table_bro tr:nth-child(even){background-color: #f2f2f2;}
+    <!-- Import for jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-.nice_table_bro tr:hover {background-color: #ddd;}
-
-.nice_table_bro th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
-    color: white;
-}
-</style>
-<div style="background-color:#4CAF50;">
-    <h1> Welcome to the Url Access log View page, {{ user.username }}</h1>
-</div>
-
-{% if error_message %}<p> <strong>{{ error_message }}</strong></p>{% endif %}
-
-{% csrf_token %}
-<br/>
-<select name="access_url" id="access_url">
-    {% for access_url_row in access_url_list %}
-        <option value="{{ access_url_row.access_url }}">{{access_url_row.access_url}}</option>
-    {% endfor %}
-</select>
-<br/><br/>
-<input type="button" value="Get logs" id="get_log">
-<script>
-    function render_log_table (log_data) {
-        console.log(log_data, typeof log_data);
-        let html_to_render = `
-            <table class="nice_table_bro">
-                <tr>
-                    <th>Web hook URL</th>
-                    <th>Input Data</th>
-                    <th>Output Data</th>
-                    <th>Response Data</th>
-                    <th>Request At</th>
-                    <th>Access Method</th>
-                </tr>`;
-        log_data.forEach((log_row) => {
-            html_to_render=`${html_to_render}
-                <tr>
-                    <td>${log_row.web_hook_url}</td>
-                    <td>${log_row.input_data}</td>
-                    <td>${log_row.output_data}</td>
-                    <td>${log_row.response_data}</td>
-                    <td>${log_row.created_at}</td>
-                    <td>${log_row.access_type}</td>
-                </tr>`;
-        });
-        $('#tableRender').html(`${html_to_render}</table>`);
+    <!-- Some copied css below -->
+    <style>
+    .nice_table_bro {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
     }
-    // Stuff to make button work
-    $(document).ready(function() {
-        $('#get_log').click((e)=>{
-            let s = $('#access_url').val();
-            $.ajax({
-                url: '{% url 'transformer:get_logs' %}',
-                type: 'POST',
-                data: {
-                    csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
-                    access_url: s
-                },
-                dataType: 'json',
-                success: (data) => {
-                    render_log_table(data.log_rows);
-                }
+
+    .nice_table_bro td, .nice_table_bro th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .nice_table_bro tr:nth-child(even){background-color: #f2f2f2;}
+
+    .nice_table_bro tr:hover {background-color: #ddd;}
+
+    .nice_table_bro th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #222222;
+        color: white;
+    }
+    </style>
+    <script>
+        function render_log_table (log_data) {
+            console.log(log_data, typeof log_data);
+            let html_to_render = `
+                <table class="nice_table_bro">
+                    <tr>
+                        <th>Web hook URL</th>
+                        <th>Input Data</th>
+                        <th>Output Data</th>
+                        <th>Response Data</th>
+                        <th>Request At</th>
+                        <th>Access Method</th>
+                    </tr>`;
+            log_data.forEach((log_row) => {
+                html_to_render=`${html_to_render}
+                    <tr>
+                        <td>${log_row.web_hook_url}</td>
+                        <td>${log_row.input_data}</td>
+                        <td>${log_row.output_data}</td>
+                        <td>${log_row.response_data}</td>
+                        <td>${log_row.created_at}</td>
+                        <td>${log_row.access_type}</td>
+                    </tr>`;
+            });
+            $('#tableRender').html(`${html_to_render}</table>`);
+        }
+        // Stuff to make button work
+        $(document).ready(function() {
+            $('#get_log').click((e)=>{
+                let s = $('#access_url').val();
+                $.ajax({
+                    url: '{% url 'transformer:get_logs' %}',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                        access_url: s
+                    },
+                    dataType: 'json',
+                    success: (data) => {
+                        render_log_table(data.log_rows);
+                    }
+                })
             })
         })
-    })
-</script>
-<br/><br/>
-<div id="tableRender"></div>
+    </script>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"> Welcome to the Url Access log View page, {{ user.username }} </a>
+        </div>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'transformer:logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    {% if error_message %}<p> <strong>{{ error_message }}</strong></p>{% endif %}
+
+    {% csrf_token %}
+    <form style="padding: 20px">
+        <div class="row">
+            <label for="access_url" class="col-sm-2">Select Web hook url to show logs for:</label>
+            <select name="access_url" class="form-control col-sm-6" style="width: 700px" id="access_url">
+                {% for access_url_row in access_url_list %}
+                    <option value="{{ access_url_row.access_url }}">{{access_url_row.access_url}}</option>
+                {% endfor %}
+            </select>
+            <div class="col-sm-1"></div>
+            <input type="button" class="btn col-sm-2" value="Get logs" id="get_log">
+        </div>
+
+    </form>
+
+    <br/><br/>
+    <div id="tableRender"></div>
+</body>

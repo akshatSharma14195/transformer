@@ -5,10 +5,10 @@ from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseRedire
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.urls import reverse
-from django.conf import settings
 import requests, json
 from django.shortcuts import render
 
@@ -16,17 +16,8 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 
-
 def index(request):
     return HttpResponse("Hola!")
-
-
-def get_requests_func(request_method):
-    request_method = request_method.lower()
-    return {
-        'post': requests.post
-    }[request_method]
-
 
 @csrf_exempt
 def transform(request, access_key):
@@ -55,7 +46,7 @@ def transform(request, access_key):
     URLAccessLog.objects.create(input_data=old_request_obj,
                                 access_url=url_map.get_access_url(),
                                 web_hook_url=url_map.web_hook_url,
-                                access_method=request.method.lower(),
+                                access_method=request.method,
                                 output_data=new_request_obj,
                                 response_data=str(response.__dict__))
 
@@ -66,8 +57,8 @@ def transform(request, access_key):
 def view_logs(request):
     user = request.user
     try:
-        access_urls = URLMapper.objects.filter(permissionmapper__group__user__id=user.id)
-    except ObjectDoesNotExist:
+        access_urls = URLMapper.objects.filter(permissionmapper__group__user=user)
+    except URLMapper.DoesNotExist:
         return HttpResponseBadRequest("Invalid user!")
     return render(request, 'transformer/log_view.html', {
         'user': user,
@@ -103,15 +94,15 @@ def get_login(request):
 
 
 def login_submit(request):
-    print request.POST
-    try:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-    except KeyError:
-        return HttpResponseBadRequest("Enter username and password!")
+    username = request.POST.get('username')
+    password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
         return HttpResponseRedirect(reverse('transformer:view_logs'))
     else:
         return HttpResponse("Invalid username or password!")
+
+
+def logout_view(request):
+    return logout(request)

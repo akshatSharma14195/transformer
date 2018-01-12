@@ -8,12 +8,13 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body class="login">
     <center>
 <div class="container">
     <div class="form-header">
-        <h1></h1>
+        <h2>Transformer Admin</h2>
     </div>
+    <br/>
     <form action="{% url 'transformer:login_submit' %}" method="post">
         {% csrf_token %}
         <div class="form-row">

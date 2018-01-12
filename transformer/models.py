@@ -23,32 +23,27 @@ class URLMapper(models.Model):
     web_hook_url = models.URLField(unique=True)
     title = models.CharField(max_length=250)
 
-    def get_transformed_keys(self, old_request_obj):
-        new_request_obj = {}
+    def get_transformed_keys(self, old_request_data):
+        new_request_data = {}
         for key_map in self.keymapper_set.all():
-            if key_map.input_key in old_request_obj:
-                new_request_obj[key_map.output_key] = old_request_obj[key_map.input_key]
-        return new_request_obj
+            if key_map.input_key in old_request_data:
+                new_request_data[key_map.output_key] = old_request_data[key_map.input_key]
+        return new_request_data
 
-    def get_headers(self, old_header):
+    def get_headers(self, old_headers):
         new_headers = {}
-        for key_row in self.headermapper_set.all():
-            new_headers[key_row.header_key] = \
-                old_header.get(get_meta_header(key_row.header_key)) \
-                or key_row.header_value
+        for header_map in self.headermapper_set.all():
+            new_headers[header_map.header_key] = \
+                old_headers.get(get_meta_header(header_map.header_key)
+                                , header_map.header_value)
         return new_headers
 
-    def make_log(self, input_data, output_data, response_data):
-        self.urlaccesslogger_set.create(input_data=input_data,
-                                        output_data=output_data,
-                                        response_data=response_data)
-
     def get_access_url(self):
-        return settings.PREFIX_URL + reverse('transformer:map_url',
-                                             kwargs={'access_key': self.access_key})
+        return '{}{}'.format(settings.PREFIX_URL, reverse('transformer:map_url',
+                                                          kwargs={'access_key': self.access_key}))
 
     def __str__(self):
-        return str(self.access_key) + " -> " + self.web_hook_url
+        return '{} -> {}'.format(unicode(self.get_access_url()), self.web_hook_url)
 
 
 class KeyMapper(models.Model):
@@ -73,6 +68,9 @@ class URLAccessLog(models.Model):
 class PermissionMapper(models.Model):
     url_mapper = models.ForeignKey(URLMapper)
     group = models.ForeignKey(Group)
+
+    class Meta:
+        unique_together = ("url_mapper", "group")
 
 
 class HeaderMapper(models.Model):

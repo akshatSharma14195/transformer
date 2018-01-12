@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'get_logs/', views.get_logs, name='get_logs'),
     url(r'login/', views.get_login),
     url(r'login_submit/', views.login_submit, name='login_submit'),
+    url(r'logout/', views.logout_view, name='logout')
 ]
