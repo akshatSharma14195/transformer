@@ -5,7 +5,7 @@ configparser==3.5.0
 Django==1.11.4
 enum34==1.1.6
 flake8==3.5.0
-gyp==0.1
+-e git+https://chromium.googlesource.com/external/gyp#egg=gyp
 idna==2.6
 mccabe==0.6.1
 pathlib==1.0.1
