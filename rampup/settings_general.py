@@ -78,10 +78,10 @@ LOGOUT_REDIRECT_URL = '/transformer/login/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd8u92b2nm2iti4',
-        'USER': 'gnjieewzakpezs',
-        'PASSWORD': '1afe31b2fa7474c75a9a81de261756840529d848a797cff715474e4d75b28cae',
-        'HOST': 'ec2-54-83-59-144.compute-1.amazonaws.com',
+        'NAME': 'dbone',
+        'USER': 'dbuser',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
