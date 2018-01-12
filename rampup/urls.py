@@ -15,16 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
-
-def redirect_login (request):
-    return HttpResponseRedirect(reverse('transformer:login'))
-
 
 urlpatterns = [
-    url(r'', redirect_login),
     url(r'^admin/', admin.site.urls),
     url(r'^transformer/', include('transformer.urls')),
 ]
