@@ -25,7 +25,7 @@ SECRET_KEY = '-xu8^vs-ac_c+cwod-4ugyy_pqot2+j2x*jgc8kl@+j9c6fc&v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vast-cliffs-47316.herokuapp.com']
 
 
 # Application definition
@@ -120,7 +120,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-PREFIX_URL = 'http://127.0.0.1:8000'
+PREFIX_URL = 'https://vast-cliffs-47316.herokuapp.com/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
