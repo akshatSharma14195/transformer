@@ -25,7 +25,7 @@ SECRET_KEY = '-xu8^vs-ac_c+cwod-4ugyy_pqot2+j2x*jgc8kl@+j9c6fc&v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['vast-cliffs-47316.herokuapp.com']
+ALLOWED_HOSTS = ['vast-cliffs-47316.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -132,3 +132,5 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles/')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+ADMIN_MEDIA_PREFIX = '/static/admin/'
