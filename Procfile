@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput; gunicorn rampup.wsgi:application
+web: mkdir static;python manage.py collectstatic --noinput; gunicorn rampup.wsgi:application
