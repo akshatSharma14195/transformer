@@ -1,3 +1,4 @@
 *.pyc
 rampup/settings.py
-rampup/staticfiles
+rampup/staticfiles/*
+static/*
