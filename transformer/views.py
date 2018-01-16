@@ -28,8 +28,8 @@ def transform(request, access_key):
         return HttpResponseBadRequest('<h1>Invalid access key</h1>')
 
     # need to get keyMaps
-    old_request_obj = request.GET
-    old_request_obj.update(request.POST)
+    old_request_obj = request.GET.dict()
+    old_request_obj.update(request.POST.dict())
     new_request_obj = url_map.get_transformed_keys(old_request_obj)
     new_headers = url_map.get_headers(request.META)
 
