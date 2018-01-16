@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '-xu8^vs-ac_c+cwod-4ugyy_pqot2+j2x*jgc8kl@+j9c6fc&v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', False)
 
 ALLOWED_HOSTS = ['vast-cliffs-47316.herokuapp.com', '127.0.0.1']
 
@@ -120,7 +120,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-PREFIX_URL = 'https://vast-cliffs-47316.herokuapp.com/'
+PREFIX_URL = 'https://vast-cliffs-47316.herokuapp.com'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
