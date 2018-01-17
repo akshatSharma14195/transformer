@@ -41,16 +41,18 @@ def transform(request, access_key):
     if request.method == 'GET':
         response = requests.get(url_map.web_hook_url, headers=new_headers,
                                 params=new_request_obj, cookies=request.COOKIES)
+    elif request.META.get('CONTENT_TYPE') == 'application/json':
+        response = requests.post(url_map.web_hook_url, headers=new_headers,
+                                 json=new_request_obj, cookies=request.COOKIES)
     else:
         response = requests.post(url_map.web_hook_url, headers=new_headers,
-                                 data=new_request_obj, cookies=request.COOKIES)
-
+                                 data=new_request_obj or request.body, cookies=request.COOKIES)
     # need to log here
     URLAccessLog.objects.create(input_data=old_request_obj,
                                 access_url=url_map.get_access_url(),
                                 web_hook_url=url_map.web_hook_url,
                                 access_method=request.method,
-                                output_data=new_request_obj,
+                                output_data=json.dumps(new_request_obj) if new_request_obj else request.body,
                                 response_data=str(response.__dict__))
 
     return HttpResponse(response)
@@ -82,7 +84,7 @@ def get_logs(request):
     return JsonResponse({'log_rows': [{'id': x.id,
                                        'web_hook_url': x.web_hook_url,
                                        'input_data': json.dumps(x.input_data, indent=2),
-                                       'output_data': json.dumps(x.output_data,indent=2),
+                                       'output_data': x.output_data,
                                        'response_data': escape(x.response_data),
                                        'access_type': x.access_method,
                                        'created_at': x.created_at.strftime('%Y-%m-%d %H:%M')

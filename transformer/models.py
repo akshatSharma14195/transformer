@@ -32,6 +32,7 @@ class URLMapper(models.Model):
 
     def get_headers(self, old_headers):
         new_headers = {}
+        new_headers['Content-type'] = old_headers.get('CONTENT_TYPE')
         for header_map in self.headermapper_set.all():
             new_headers[header_map.header_key] = \
                 old_headers.get(get_meta_header(header_map.header_key)
@@ -61,7 +62,7 @@ class URLAccessLog(models.Model):
     access_method = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     input_data = JSONField(default=json_default)
-    output_data = JSONField(default=json_default)
+    output_data = models.TextField(default='')
     response_data = models.TextField(default='')
 
 

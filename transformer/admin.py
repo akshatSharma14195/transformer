@@ -8,6 +8,7 @@ import json
 from .models import URLMapper, KeyMapper, PermissionMapper, HeaderMapper, URLAccessLog
 # Register your models here.
 
+import json
 
 class KeyMapperInline(admin.TabularInline):
     model = KeyMapper
@@ -52,7 +53,11 @@ get_input_data.short_description = "Input Data"
 
 
 def get_output_data(obj):
-    return json.dumps(obj.output_data)
+    try:
+        json_obj = json.dumps(json.loads(obj.output_data), indent=2)
+    except ValueError:
+        json_obj = None
+    return json_obj or obj.output_data
 
 
 get_output_data.short_description = "Output Data"
