@@ -30,7 +30,9 @@ def transform(request, access_key):
     # need to get keyMaps
     old_request_obj = request.GET.dict()
     old_request_obj.update(request.POST.dict())
-    old_request_obj.update(json.loads(request.body))
+    if request.META.get('CONTENT_TYPE') == 'application/json':
+        old_request_obj.update(json.loads(request.body))
+
     new_request_obj = url_map.get_transformed_keys(old_request_obj)
     new_headers = url_map.get_headers(request.META)
 
