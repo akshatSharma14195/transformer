@@ -63,10 +63,24 @@ def get_output_data(obj):
 get_output_data.short_description = "Output Data"
 
 
+def get_old_headers(obj):
+    return json.dumps(obj.old_headers, indent=2)
+
+
+get_old_headers.short_description = "Old Headers"
+
+
+def get_new_headers(obj):
+    return json.dumps(obj.new_headers, indent=2)
+
+
+get_old_headers.short_description = "New Headers"
+
+
 class URLAccessLogAdmin(admin.ModelAdmin):
-    readonly_fields = ("created_at", "input_data", "output_data", "response_data")
+    readonly_fields = ("created_at", "input_data", "output_data", "response_data", "old_headers", "new_headers")
     list_display = ("web_hook_url", "access_url", get_created_at,
-                    get_input_data, get_output_data,
+                    get_input_data, get_output_data, get_old_headers, get_new_headers,
                     "response_data", "access_method")
 
     def has_delete_permission(self, request, obj=None):

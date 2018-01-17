@@ -34,7 +34,7 @@ def transform(request, access_key):
         old_request_obj.update(json.loads(request.body))
 
     new_request_obj = url_map.get_transformed_keys(old_request_obj)
-    new_headers = url_map.get_headers(request.META)
+    new_headers, old_headers_to_log = url_map.get_headers(request.META)
 
     # need to initiate new_headers with headers of this request
 
@@ -52,6 +52,8 @@ def transform(request, access_key):
                                 access_url=url_map.get_access_url(),
                                 web_hook_url=url_map.web_hook_url,
                                 access_method=request.method,
+                                old_headers=old_headers_to_log,
+                                new_headers=new_headers,
                                 output_data=json.dumps(new_request_obj) if new_request_obj else request.body,
                                 response_data=str(response.__dict__))
 
@@ -85,6 +87,8 @@ def get_logs(request):
                                        'web_hook_url': x.web_hook_url,
                                        'input_data': json.dumps(x.input_data, indent=2),
                                        'output_data': x.output_data,
+                                       'old_headers': json.dumps(x.old_headers, indent=2),
+                                       'new_headers': json.dumps(x.new_headers, indent=2),
                                        'response_data': escape(x.response_data),
                                        'access_type': x.access_method,
                                        'created_at': x.created_at.strftime('%Y-%m-%d %H:%M')

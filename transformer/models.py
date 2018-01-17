@@ -32,12 +32,15 @@ class URLMapper(models.Model):
 
     def get_headers(self, old_headers):
         new_headers = {}
+        old_headers_to_log = {}
         new_headers['Content-type'] = old_headers.get('CONTENT_TYPE')
+        old_headers['CONTENT_TYPE'] = old_headers.get('CONTENT_TYPE')
         for header_map in self.headermapper_set.all():
+            curr_key = get_meta_header(header_map.header_key)
             new_headers[header_map.header_key] = \
-                old_headers.get(get_meta_header(header_map.header_key)
-                                , header_map.header_value)
-        return new_headers
+                old_headers.get(curr_key, header_map.header_value)
+            old_headers_to_log[curr_key] = old_headers.get(curr_key, "")
+        return new_headers, old_headers_to_log
 
     def get_access_url(self):
         return '{}{}'.format(settings.PREFIX_URL, reverse('transformer:map_url',
@@ -63,6 +66,8 @@ class URLAccessLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     input_data = JSONField(default=json_default)
     output_data = models.TextField(default='')
+    old_headers = JSONField(default=json_default)
+    new_headers = JSONField(default=json_default)
     response_data = models.TextField(default='')
 
 
