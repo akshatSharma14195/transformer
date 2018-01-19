@@ -9,7 +9,7 @@ from django.contrib.auth.views import logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.urls import reverse
-import requests, json
+import json
 from django.shortcuts import render
 
 # Create your views here.
@@ -27,35 +27,16 @@ def transform(request, access_key):
     except ObjectDoesNotExist:
         return HttpResponseBadRequest('<h1>Invalid access key</h1>')
 
-    # need to get keyMaps
-    old_request_obj = request.GET.dict()
-    old_request_obj.update(request.POST.dict())
-    if request.META.get('CONTENT_TYPE') == 'application/json':
-        old_request_obj.update(json.loads(request.body))
+    try:
+        url_map.check_valid_request(request)
+        url_map.transform_keys()
+        url_map.set_headers()
+    except ValueError as e:
+        print e
+        return HttpResponseBadRequest('<h1>Invalid request type</h1>')
 
-    new_request_obj = url_map.get_transformed_keys(old_request_obj)
-    new_headers, old_headers_to_log = url_map.get_headers(request.META)
-
-    # need to initiate new_headers with headers of this request
-
-    if request.method == 'GET':
-        response = requests.get(url_map.web_hook_url, headers=new_headers,
-                                params=new_request_obj, cookies=request.COOKIES)
-    elif request.META.get('CONTENT_TYPE') == 'application/json':
-        response = requests.post(url_map.web_hook_url, headers=new_headers,
-                                 json=new_request_obj, cookies=request.COOKIES)
-    else:
-        response = requests.post(url_map.web_hook_url, headers=new_headers,
-                                 data=new_request_obj or request.body, cookies=request.COOKIES)
-    # need to log here
-    URLAccessLog.objects.create(input_data=old_request_obj,
-                                access_url=url_map.get_access_url(),
-                                web_hook_url=url_map.web_hook_url,
-                                access_method=request.method,
-                                old_headers=old_headers_to_log,
-                                new_headers=new_headers,
-                                output_data=json.dumps(new_request_obj) if new_request_obj else request.body,
-                                response_data=str(response.__dict__))
+    response = url_map.get_response()
+    url_map.log_transform()
 
     return HttpResponse(response)
 
